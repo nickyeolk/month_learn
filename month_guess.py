@@ -8,6 +8,7 @@ Created on Tue May 29 17:20:30 2018
 import numpy as np
 import tensorflow as tf
 import os
+from random import shuffle
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -89,7 +90,7 @@ def cnn_model_fn(features,labels,mode):
     
     #print confusion matrix images
     confused=tf.confusion_matrix(labels=labels,predictions=predictions['classes'],dtype=tf.float16)
-    confused1=tf.reshape(confused,[1,10,10,1])
+    confused1=tf.reshape(confused,[1,12,12,1])
     tf.summary.image('confusion_mat',confused1) #cols are predictions, rows are labels
     
     #print misclassified images
@@ -113,13 +114,27 @@ def cnn_model_fn(features,labels,mode):
 
 def main(unused_argv):
     #load training and eval data
-    trmm=np.load('./trmm_data.npy')
-    label=np.load('./trmm_label.npy')
+
+    trmm_data = np.load('./trmm_data.npy').astype(np.float32)
+    trmm_labels = np.load('./trmm_label.npy').astype(np.int32)
+    c = list(zip(trmm_data,trmm_labels))
+    shuffle(c)
+    trmm_data_t,trmm_labels_t=zip(*c)
+    trmm_data=np.array(trmm_data_t)
+    trmm_labels=np.array(trmm_labels_t)
+    print(trmm_labels_t[:10])
     
-    train_data=mnist.train.images
-    train_labels=np.asarray(mnist.train.labels,dtype=np.int32)
-    eval_data=mnist.train.images
-    eval_labels=np.asarray(mnist.train.labels,dtype=np.int32)
+    train_data = trmm_data[:int(0.6*len(trmm_labels))]    
+    test_data = trmm_data[int(0.6*len(trmm_labels)):int(0.8*len(trmm_labels))]   
+    validate_data = trmm_data[int(0.8*len(trmm_labels)):]
+    train_labels = trmm_labels[:int(0.6*len(trmm_labels))]    
+    test_labels = trmm_labels[int(0.6*len(trmm_labels)):int(0.8*len(trmm_labels))]   
+    validate_labels = trmm_labels[int(0.8*len(trmm_labels)):]
+    
+    assert train_data.shape[0] == train_labels.shape[0]
+    dataset = tf.contrib.data.Dataset.from_tensors((train_data, train_labels))
+    print(dataset)
+    
     #create the estimator
     mnist_classifier=tf.estimator.Estimator(model_fn=cnn_model_fn,
                                             model_dir='./trmm_convnet')
@@ -127,7 +142,7 @@ def main(unused_argv):
     tensors_to_log={'probabilities':'softmax_tensor'}
     logging_hook=tf.train.LoggingTensorHook(tensors=tensors_to_log,
                                             every_n_iter=100)
-    #training time
+#    training time
     train_input_fn=tf.estimator.inputs.numpy_input_fn(
         x={'x':train_data},
         y=train_labels,
@@ -137,8 +152,8 @@ def main(unused_argv):
     mnist_classifier.train(
         input_fn=train_input_fn,steps=20000,hooks=[logging_hook])
     eval_input_fn=tf.estimator.inputs.numpy_input_fn(
-        x={'x':eval_data},
-        y=eval_labels,
+        x={'x':test_data},
+        y=test_labels,
         num_epochs=1,
         shuffle=False)
     eval_results=mnist_classifier.evaluate(input_fn=eval_input_fn)
