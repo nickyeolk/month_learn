@@ -4,5 +4,6 @@ The main theory here is that due to the high autocorrelation between rainfall be
 1) Shuffle the data before splitting into train/test sets
 2) Split the data into train/test sets first, then shuffle
 
-### Shuffle the data before splitting into train/test sets
+### Test 1: Shuffle the data before splitting into train/test sets
 Method 1 results in a test accuracy of {'accuracy': 0.37400723, 'global_step': 20000, 'loss': 1.6128341}
+![Confusion matrix](./img/trmm_test1_confusion_matrix.png)
