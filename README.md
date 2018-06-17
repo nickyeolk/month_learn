@@ -19,13 +19,13 @@ The data is split 80/20 into train/test. keeping all other hyperparameters the s
 
 ### Test 1: Shuffle the data before splitting into train/test sets
 Method 1 results in a test accuracy of {'accuracy': 0.4, 'global_step': 20000, 'loss': 1.573154}
-![Confusion matrix Test 1](./img/test1_confusion_matrix.jpg)
+![Confusion matrix Test 1](./img/test1_confusion_matrix.JPG)
 
 ### Test 2: Split into train/test sets before shuffling
 Method 2 results in a test accuracy of {'accuracy': 0.3910453, 'global_step': 20000, 'loss': 1.5962765}
-![Confusion matrix Test 2](./img/test2_confusion_matrix.jpg)
+![Confusion matrix Test 2](./img/test2_confusion_matrix.JPG)
 
 ### Training accuracy comparison
 1) The Yellow line is the accuracy of Test 1 over the 20k learning steps, and 
 2) the Blue line is the accuracy of Test 2 over the 20k learning steps.
-![Training accuracy](./img/test1_2_accuracy.jpg)
+![Training accuracy](./img/test1_2_accuracy.JPG)
