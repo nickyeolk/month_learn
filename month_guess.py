@@ -117,19 +117,32 @@ def main(unused_argv):
 
     trmm_data = np.load('./trmm_data.npy').astype(np.float32)
     trmm_labels = np.load('./trmm_label.npy').astype(np.int32)
+
     c = list(zip(trmm_data,trmm_labels))
     shuffle(c)
     trmm_data_t,trmm_labels_t=zip(*c)
     trmm_data=np.array(trmm_data_t)
-    trmm_labels=np.array(trmm_labels_t)
-    print(trmm_labels_t[:10])
+    trmm_labels=np.array(trmm_labels_t)    
     
-    train_data = trmm_data[:int(0.6*len(trmm_labels))]    
-    test_data = trmm_data[int(0.6*len(trmm_labels)):int(0.8*len(trmm_labels))]   
-    validate_data = trmm_data[int(0.8*len(trmm_labels)):]
-    train_labels = trmm_labels[:int(0.6*len(trmm_labels))]    
-    test_labels = trmm_labels[int(0.6*len(trmm_labels)):int(0.8*len(trmm_labels))]   
-    validate_labels = trmm_labels[int(0.8*len(trmm_labels)):]
+    train_data = trmm_data[:int(0.8*len(trmm_labels))]    
+    test_data = trmm_data[int(0.8*len(trmm_labels)):]   
+#    validate_data = trmm_data[int(0.8*len(trmm_labels)):]
+    train_labels = trmm_labels[:int(0.8*len(trmm_labels))]    
+    test_labels = trmm_labels[int(0.8*len(trmm_labels)):]   
+#    validate_labels = trmm_labels[int(0.8*len(trmm_labels)):]
+    
+#    c = list(zip(train_data,train_labels))
+#    shuffle(c)
+#    train_data_t,train_labels_t=zip(*c)
+#    train_data=np.array(train_data_t)
+#    train_labels=np.array(train_labels_t)
+#
+#    c2 = list(zip(test_data,test_labels))
+#    shuffle(c2)
+#    test_data_t,test_labels_t=zip(*c)
+#    test_data=np.array(test_data_t)
+#    test_labels=np.array(test_labels_t)    
+
     
     assert train_data.shape[0] == train_labels.shape[0]
     dataset = tf.contrib.data.Dataset.from_tensors((train_data, train_labels))
@@ -137,7 +150,7 @@ def main(unused_argv):
     
     #create the estimator
     mnist_classifier=tf.estimator.Estimator(model_fn=cnn_model_fn,
-                                            model_dir='./trmm_convnet')
+                                            model_dir='./trmm_convnet4')
     #set up logging
     tensors_to_log={'probabilities':'softmax_tensor'}
     logging_hook=tf.train.LoggingTensorHook(tensors=tensors_to_log,
